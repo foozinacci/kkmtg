@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>...</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #08080c;
+            background-image: 
+                radial-gradient(ellipse at 50% 0%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: #e2e2e2;
+        }
+
+        .container {
+            max-width: 540px;
+            width: 100%;
+        }
+
+        .card {
+            background: linear-gradient(165deg, rgba(20, 20, 28, 0.9) 0%, rgba(12, 12, 18, 0.95) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 4px 24px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+                0 1px 0 rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: block;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(12px);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+            }
+        }
+
+        .question-num {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: rgba(139, 92, 246, 0.7);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #f0f0f0;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: #a0a0a0;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            padding: 1.25rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 400;
+            color: #c0c0c0;
+            text-align: left;
+            border-radius: 12px;
+        }
+
+        .option:hover {
+            background: rgba(139, 92, 246, 0.08);
+            border-color: rgba(139, 92, 246, 0.3);
+            color: #fff;
+            transform: translateX(4px);
+        }
+
+        .option.selected {
+            background: rgba(139, 92, 246, 0.12);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #fff;
+        }
+
+        .option.hidden {
+            display: none;
+        }
+
+        .response {
+            display: none;
+            color: #8b8b8b;
+            font-size: 0.95rem;
+            font-style: italic;
+            margin-top: 1.5rem;
+            text-align: center;
+            padding-top: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .response.visible {
+            display: block;
+            animation: fadeUp 0.35s ease;
+        }
+
+        .continue {
+            display: none;
+            background: transparent;
+            border: none;
+            color: rgba(139, 92, 246, 0.5);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0;
+            margin-top: 1.5rem;
+            transition: all 0.25s ease;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+        }
+
+        .continue.visible {
+            display: block;
+        }
+
+        .continue:hover {
+            color: rgba(139, 92, 246, 1);
+        }
+
+        .final-container {
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        .final-made-it {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .final-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+            background: linear-gradient(135deg, #fff 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .final-subtitle {
+            font-style: italic;
+            color: #5a5a5a;
+            margin-bottom: 2.5rem;
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+
+        .enter-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 12px;
+            color: #a78bfa;
+            text-decoration: none;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            background: rgba(139, 92, 246, 0.05);
+        }
+
+        .enter-btn:hover {
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .combat-scenario {
+            font-size: 0.875rem;
+            color: #999;
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .combat-scenario strong {
+            color: #d0d0d0;
+            font-weight: 600;
+        }
+
+        .combat-scenario .highlight {
+            color: #4ade80;
+            font-weight: 500;
+        }
+
+        .progress-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: rgba(139, 92, 246, 0.6);
+            box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+        }
+
+        .dot.completed {
+            background: rgba(139, 92, 246, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+
+            <!-- Q1 -->
+            <div class="screen active" id="q1">
+                <div class="progress-dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="question-num">Question One</div>
+                <div class="question-text">How's your luck on curve?</div>
+                <div class="options">
+                    <div class="option" data-choice="a" onclick="selectOption(1, 'a')">Keep 2 land hands and flood out</div>
+                    <div class="option" data-choice="b" onclick="selectOption(1, 'b')">Keep 3 lands and never see a 4th</div>
+                </div>
+                <div class="response" id="r1"></div>
+                <button class="continue" id="c1" onclick="nextQuestion(2)">continue</button>
+            </div>
+
+            <!-- Q2 -->
+            <div class="screen" id="q2">
+                <div class="progress-dots">
+                    <div class="dot completed"></div>
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="question-num">Question Two</div>
+                <div class="question-text">Your opponent has untapped blue mana. You:</div>
+                <div class="options">
+                    <div class="option" data-choice="a" onclick="selectOption(2, 'a')">Play around the counterspell</div>
+                    <div class="option" data-choice="b" onclick="selectOption(2, 'b')">Slam your spell and pray</div>
+                </div>
+                <div class="response" id="r2"></div>
+                <button class="continue" id="c2" onclick="nextQuestion(3)">continue</button>
+            </div>
+
+            <!-- Q3 -->
+            <div class="screen" id="q3">
+                <div class="progress-dots">
+                    <div class="dot completed"></div>
+                    <div class="dot completed"></div>
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="question-num">Question Three</div>
+                <div class="question-text">The card reads:</div>
+                <div class="card-text">"Vivid — When this creature enters, reveal cards from the top of your library until you reveal X permanent cards, where X is the number of colors among permanents you control. Put any number of those permanent cards onto the battlefield, then put the rest of the revealed cards on the bottom of your library in a random order."</div>
+                <div class="question-text">What does it do?</div>
+                <div class="options">
+                    <div class="option" data-choice="a" onclick="selectOption(3, 'a')">Large body with ETB board advantage</div>
+                    <div class="option" data-choice="b" onclick="selectOption(3, 'b')">It explains the card, that's what it does</div>
+                </div>
+                <div class="response" id="r3"></div>
+                <button class="continue" id="c3" onclick="nextQuestion(4)">continue</button>
+            </div>
+
+            <!-- Q4 -->
+            <div class="screen" id="q4">
+                <div class="progress-dots">
+                    <div class="dot completed"></div>
+                    <div class="dot completed"></div>
+                    <div class="dot completed"></div>
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                </div>
+                <div class="question-num">Question Four</div>
+                <div class="question-text">You mulligan to six and feel confident. The universe hears:</div>
+                <div class="options">
+                    <div class="option" data-choice="a" onclick="selectOption(4, 'a')">"Good luck"</div>
+                    <div class="option" data-choice="b" onclick="selectOption(4, 'b')">"Please punish me"</div>
+                </div>
+                <div class="response" id="r4"></div>
+                <button class="continue" id="c4" onclick="nextQuestion(5)">continue</button>
+            </div>
+
+            <!-- Q5 -->
+            <div class="screen" id="q5">
+                <div class="progress-dots">
+                    <div class="dot completed"></div>
+                    <div class="dot completed"></div>
+                    <div class="dot completed"></div>
+                    <div class="dot completed"></div>
+                    <div class="dot active"></div>
+                </div>
+                <div class="question-num">Question Five</div>
+                <div class="question-text">Block or not to block, that is the question.</div>
+                <div class="combat-scenario">
+                    Your opponent attacks with five creatures: a <strong>6/6 trample</strong>, a <strong>5/5 double strike</strong>, a <strong>4/4 menace</strong>, a <strong>3/3 haste</strong>, and a <strong>2/2 that gives +1/+0 to attackers</strong>.
+                    <br><br>
+                    <span class="highlight">One green mana open.</span> Instant in hand: <strong>"+3/+3 and trample."</strong>
+                    <br><br>
+                    You're at <strong>14 life</strong>. Your blockers: a <strong>3/3</strong> and a <strong>1/1</strong>. No abilities.
+                </div>
+                <div class="options">
+                    <div class="option" data-choice="a" onclick="selectOption(5, 'a')">Block</div>
+                    <div class="option" data-choice="b" onclick="selectOption(5, 'b')">Don't block</div>
+                </div>
+                <div class="response" id="r5"></div>
+                <button class="continue" id="c5" onclick="nextQuestion(6)">continue</button>
+            </div>
+
+            <!-- FINAL -->
+            <div class="screen" id="q6">
+                <div class="final-container">
+                    <div class="final-made-it">You made it.</div>
+                    <div class="final-title">KALPERS KEEP</div>
+                    <div class="final-subtitle">"we keep it together (barely)"</div>
+                    <a href="https://discord.gg/6yv5J4dC5x" class="enter-btn" target="_blank">Enter the Keep</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const responses = {
+            1: {
+                a: "At least you cast spells before you lost.",
+                b: "At least you had hope."
+            },
+            2: {
+                a: "Coward.",
+                b: "Respect."
+            },
+            3: {
+                a: "Such a good reader.",
+                b: "Reading is just delayed grief."
+            },
+            4: {
+                a: "Cute.",
+                b: "It always does."
+            },
+            5: {
+                a: "Doesn't matter — you're dead either way. Math is for blockers.",
+                b: "Doesn't matter — you're dead either way. Math is for blockers."
+            }
+        };
+
+        function selectOption(questionNum, choice) {
+            const container = document.getElementById(`q${questionNum}`);
+            const options = container.querySelectorAll('.option');
+            const response = document.getElementById(`r${questionNum}`);
+            const continueBtn = document.getElementById(`c${questionNum}`);
+            
+            options.forEach(opt => {
+                if (opt.dataset.choice === choice) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.add('hidden');
+                }
+            });
+            
+            response.textContent = responses[questionNum][choice];
+            response.classList.add('visible');
+            
+            setTimeout(() => {
+                continueBtn.classList.add('visible');
+            }, 600);
+        }
+
+        function nextQuestion(nextNum) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(s => s.classList.remove('active'));
+            
+            document.getElementById(`q${nextNum}`).classList.add('active');
+        }
+    </script>
+</body>
+</html>
